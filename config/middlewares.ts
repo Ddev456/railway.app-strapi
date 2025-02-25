@@ -19,7 +19,7 @@ export default [
   'strapi::poweredBy',
   'strapi::query',
   'strapi::body',
-  /*{
+  {
     name: 'strapi::session',
     config: {
       secure: true,
@@ -27,7 +27,7 @@ export default [
       sameSite: 'none',
       proxy: false
     }
-  }, */
+  },
   'strapi::session',
   'strapi::favicon',
   'strapi::public',

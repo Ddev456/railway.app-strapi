@@ -206,7 +206,7 @@ interface GenerateEventsRequestBody {
 
 export default factories.createCoreController('api::event.event', ({ strapi }) => ({
   async generateForPlant(ctx: Context): Promise<void> {
-    const { plant, area, configuration, selectedSteps, climate } = ctx.request.body.body as GenerateEventsRequestBody;
+    const { plant, area, configuration, selectedSteps, climate } = ctx.request.body as GenerateEventsRequestBody;
 
     if (!plant || !area || !configuration || !selectedSteps || !climate) {
       throw new Error(ERROR_MESSAGES.MISSING_PARAMS);
