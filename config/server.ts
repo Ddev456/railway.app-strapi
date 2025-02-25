@@ -1,9 +1,15 @@
 export default ({ env }) => ({
-  host: env('HOST', '0.0.0.0'),
-  port: env.int('PORT', 1337),
+  host: 'localhost',
+  port: 1337,
+  url: env('STRAPI_URL', 'http://localhost:1337'),
   app: {
-    keys: env.array('APP_KEYS'),
+      keys: env.array('APP_KEYS'),
   },
-  url: env('URL'),
-  proxy: true
+  security: {
+      cors: {
+          enabled: true,
+          origin: [env('FRONTEND_URL', 'http://localhost:3000')],
+          credentials: true,
+      },
+  },
 });

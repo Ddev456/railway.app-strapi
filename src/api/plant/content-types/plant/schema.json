@@ -1,0 +1,87 @@
+{
+  "kind": "collectionType",
+  "collectionName": "plants",
+  "info": {
+    "singularName": "plant",
+    "pluralName": "plants",
+    "displayName": "Plant",
+    "description": "Modèle de plante pour le garden planner"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "category": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "icon": {
+      "type": "string",
+      "required": false
+    },
+    "season": {
+      "type": "string",
+      "required": true
+    },
+    "plantingPeriod": {
+      "type": "string",
+      "required": true
+    },
+    "growthTime": {
+      "type": "string",
+      "required": true
+    },
+    "spacing": {
+      "type": "string",
+      "required": true
+    },
+    "exposure": {
+      "type": "string",
+      "required": true
+    },
+    "difficulty": {
+      "type": "enumeration",
+      "enum": [
+        "Facile",
+        "Moyen",
+        "Difficile"
+      ],
+      "required": true
+    },
+    "waterNeeds": {
+      "type": "enumeration",
+      "enum": [
+        "Faible",
+        "Moyen",
+        "Élevé"
+      ],
+      "required": true
+    },
+    "recommendedClimate": {
+      "type": "json",
+      "required": true
+    },
+    "companions": {
+      "type": "json",
+      "required": true
+    },
+    "cultivation_steps": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::cultivation-step.cultivation-step",
+      "mappedBy": "plant"
+    },
+    "diseases": {
+      "type": "json"
+    }
+  }
+}

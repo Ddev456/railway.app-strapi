@@ -1,9 +1,4 @@
 export default ({ env }) => ({
-    'users-permissions': {
-        config: {
-            jwtSecret: env('JWT_SECRET'),
-        },
-    },
     upload: {
         config: {
             provider: 'cloudinary',
@@ -19,4 +14,17 @@ export default ({ env }) => ({
             },
         },
     },
+    email: {
+        config: {
+          provider: 'strapi-provider-email-resend',
+          providerOptions: {
+            apiKey: env('RESEND_API_KEY'),
+          },
+          settings: {
+            defaultFrom: 'noreply@carnetpotager.fr',
+            defaultReplyTo: 'noreply@carnetpotager.fr',
+            confirmationUrl: process.env.FRONTEND_URL + '/?emailConfirmed=true&timestamp=${Date.now()}',
+          },
+        }
+      },
 });

@@ -1,0 +1,103 @@
+{
+  "kind": "collectionType",
+  "collectionName": "events",
+  "info": {
+    "singularName": "event",
+    "pluralName": "events",
+    "displayName": "Event",
+    "description": "Événements liés au jardinage (arrosage, plantation, entretien, etc.)"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true,
+      "minLength": 3
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "eventDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "Début de culture",
+        "Arrosage",
+        "Entretien",
+        "Culture",
+        "Alerte",
+        "Divers"
+      ],
+      "required": true,
+      "default": "Culture"
+    },
+    "importance": {
+      "type": "enumeration",
+      "enum": [
+        "Priorité élevée",
+        "Priorité moyenne",
+        "Priorité faible"
+      ],
+      "required": true,
+      "default": "Priorité faible"
+    },
+    "metadata": {
+      "type": "json"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "completedAt": {
+      "type": "datetime"
+    },
+    "recurrenceRule": {
+      "type": "component",
+      "repeatable": false,
+      "component": "event.recurrence-rule"
+    },
+    "recurrenceAdjustments": {
+      "type": "component",
+      "repeatable": true,
+      "component": "event.recurrence-adjustment"
+    },
+    "plant": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::plant.plant"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "events"
+    },
+    "eventType": {
+      "type": "enumeration",
+      "enum": [
+        "Personnalisé",
+        "Dynamique"
+      ],
+      "default": "Dynamique",
+      "required": true
+    },
+    "area": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::area.area"
+    },
+    "configuration": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::configuration.configuration"
+    }
+  }
+}

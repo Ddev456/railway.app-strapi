@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_garden_climates",
+  "info": {
+    "displayName": "climate",
+    "icon": "sun",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "icon": {
+      "type": "string",
+      "required": true
+    },
+    "characteristics": {
+      "type": "json",
+      "required": true
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "Océanique",
+        "Tempéré ",
+        "Continental",
+        "Montagnard",
+        "Méditerranéen"
+      ],
+      "default": "Tempéré ",
+      "required": true
+    }
+  }
+}

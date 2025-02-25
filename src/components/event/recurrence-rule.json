@@ -1,0 +1,33 @@
+{
+  "collectionName": "components_event_recurrence_rules",
+  "info": {
+    "displayName": "RecurrenceRule",
+    "icon": "manyWays"
+  },
+  "options": {},
+  "attributes": {
+    "frequency": {
+      "type": "enumeration",
+      "enum": [
+        "daily",
+        "weekly",
+        "monthly"
+      ],
+      "required": true
+    },
+    "interval": {
+      "type": "integer",
+      "default": 1,
+      "min": 1
+    },
+    "weekDays": {
+      "type": "json"
+    },
+    "monthDays": {
+      "type": "json"
+    },
+    "endDate": {
+      "type": "datetime"
+    }
+  }
+}

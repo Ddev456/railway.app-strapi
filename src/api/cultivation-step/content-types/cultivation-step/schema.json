@@ -1,0 +1,52 @@
+{
+  "kind": "collectionType",
+  "collectionName": "cultivation_steps",
+  "info": {
+    "singularName": "cultivation-step",
+    "pluralName": "cultivation-steps",
+    "displayName": "Cultivation Step",
+    "description": "Étapes de culture pour les plantes"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "duration": {
+      "type": "integer",
+      "required": true,
+      "min": 1
+    },
+    "season": {
+      "type": "string",
+      "required": true
+    },
+    "importance": {
+      "type": "enumeration",
+      "enum": [
+        "Importante",
+        "Recommandée",
+        "Facultative"
+      ],
+      "required": true,
+      "default": "Recommandée"
+    },
+    "plant": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::plant.plant",
+      "inversedBy": "cultivation_steps"
+    },
+    "isCropStart": {
+      "type": "boolean",
+      "required": true
+    }
+  }
+}

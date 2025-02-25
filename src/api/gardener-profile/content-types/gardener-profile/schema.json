@@ -1,0 +1,77 @@
+{
+  "kind": "collectionType",
+  "collectionName": "gardener_profiles",
+  "info": {
+    "singularName": "gardener-profile",
+    "pluralName": "gardener-profiles",
+    "displayName": "GardenerProfile",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "pseudo": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "minLength": 4,
+      "maxLength": 32
+    },
+    "isPublic": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "experienceLevel": {
+      "type": "enumeration",
+      "enum": [
+        "Débutant",
+        "Amateur",
+        "Expert"
+      ],
+      "default": "Débutant",
+      "required": true
+    },
+    "notifications": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "gardenName": {
+      "type": "string",
+      "required": false
+    },
+    "gardenSize": {
+      "type": "integer",
+      "max": 3000,
+      "min": 1,
+      "required": true,
+      "default": 1
+    },
+    "climate": {
+      "type": "enumeration",
+      "enum": [
+        "Océanique",
+        "Tempéré",
+        "Continental",
+        "Montagnard",
+        "Méditerranéen"
+      ],
+      "default": "Tempéré",
+      "required": true
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "gardener_profile"
+    },
+    "onboarding": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    }
+  }
+}

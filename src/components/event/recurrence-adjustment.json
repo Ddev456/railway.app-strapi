@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_event_recurrence_adjustments",
+  "info": {
+    "displayName": "RecurrenceAdjustment",
+    "icon": "clock"
+  },
+  "options": {},
+  "attributes": {
+    "originalDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "adjustedDate": {
+      "type": "datetime"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "isSkipped": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

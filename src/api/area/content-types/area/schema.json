@@ -1,0 +1,62 @@
+{
+  "kind": "collectionType",
+  "collectionName": "areas",
+  "info": {
+    "singularName": "area",
+    "pluralName": "areas",
+    "displayName": "Area",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "soilType": {
+      "type": "enumeration",
+      "enum": [
+        "Argileux",
+        "Limoneux",
+        "Calcaire",
+        "Acide"
+      ]
+    },
+    "areaSize": {
+      "type": "integer",
+      "default": 1,
+      "min": 1,
+      "max": 30
+    },
+    "areaType": {
+      "type": "enumeration",
+      "enum": [
+        "Parcelle",
+        "Serre de jardin",
+        "Bac",
+        "Terrasse ou balcon"
+      ],
+      "default": "Parcelle",
+      "required": true
+    },
+    "sunExposure": {
+      "type": "enumeration",
+      "enum": [
+        "Ensoleillé",
+        "Mi-ombre",
+        "Ombragé"
+      ],
+      "required": true,
+      "default": "Mi-ombre"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "areas"
+    }
+  }
+}
