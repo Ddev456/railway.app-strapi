@@ -5,6 +5,16 @@ export default ({ env }) => ({
     app: {
         keys: env.array('APP_KEYS'),
     },
+    middlewares: {
+        settings: {
+            session: {
+                enabled: true,
+                secure: true,
+                sameSite: 'none',
+                proxy: true
+            }
+        }
+    },
     security: {
         cors: {
             enabled: true,
@@ -16,3 +26,4 @@ export default ({ env }) => ({
     },
     proxy: env('NODE_ENV') === 'production'
 });
+  

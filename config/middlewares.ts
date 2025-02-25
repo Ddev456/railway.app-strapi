@@ -28,7 +28,6 @@ export default [
       proxy: false
     }
   },
-  'strapi::session',
   'strapi::favicon',
   'strapi::public',
   "global::ratelimit",

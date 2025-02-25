@@ -21,8 +21,8 @@ export default {
               gardenName: "Mon jardin",
               notifications: false,
               gardenSize: 1,
-              publishedAt: new Date()
             },
+            status: 'published',
           });
         } catch (error) {
           console.error('Error creating gardener profile:', error);
