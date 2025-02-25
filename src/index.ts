@@ -77,7 +77,7 @@ export default {
               pseudo: user.username,
               notifications: true,
               gardenSize: 'small',
-              publishedAt: new Date()
+              status: 'published',
             },
           });
 

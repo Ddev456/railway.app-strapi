@@ -19,15 +19,16 @@ export default [
   'strapi::poweredBy',
   'strapi::query',
   'strapi::body',
-  {
+  /*{
     name: 'strapi::session',
     config: {
       secure: true,
       httpOnly: true,
       sameSite: 'none',
-      proxy: true
+      proxy: false
     }
-  },
+  }, */
+  'strapi::session',
   'strapi::favicon',
   'strapi::public',
   "global::ratelimit",

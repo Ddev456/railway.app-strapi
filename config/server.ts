@@ -14,15 +14,5 @@ export default ({ env }) => ({
             credentials: true,
         },
     },
-    middlewares: {
-        settings: {
-            session: {
-                enabled: true,
-                secure: true,
-                sameSite: 'none',
-                proxy: true
-            }
-        }
-    },
     proxy: env('NODE_ENV') === 'production'
 });
