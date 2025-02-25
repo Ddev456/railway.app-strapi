@@ -77,8 +77,8 @@ export default {
               pseudo: user.username,
               notifications: true,
               gardenSize: 'small',
-              status: 'published',
             },
+            status: 'published',
           });
 
           // Envoi immédiat du mail de bienvenue pour OAuth
