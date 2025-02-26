@@ -635,6 +635,9 @@ export interface ApiCultivationStepCultivationStep
       Schema.Attribute.DefaultTo<'Recommand\u00E9e'>;
     plant: Schema.Attribute.Relation<'manyToOne', 'api::plant.plant'>;
     isCropStart: Schema.Attribute.Boolean & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer & Schema.Attribute.Required;
+    dependsOn: Schema.Attribute.JSON;
+    triggers: Schema.Attribute.JSON;
     createdAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     publishedAt: Schema.Attribute.DateTime;

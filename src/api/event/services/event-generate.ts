@@ -230,63 +230,98 @@ function getImportanceLevel(importance: ImportanceStepEnum) {
 }
 
 export default factories.createCoreService('api::event.event', ({ strapi }) => ({    
-    async generate({plant, area, configuration, selectedSteps, climate}: {plant: Plant, area: Area, configuration: Configuration, selectedSteps: CultivationStep[], climate: string}){
-      console.log("service generate called with : ", plant, area, configuration, selectedSteps, climate)
-      const findFirstCropStartStep = this.findFirstCropStartStep(selectedSteps)
+  async generate({plant, area, configuration, selectedSteps, climate}) {
+    try {
+      console.log("=== Début de la génération ===");
+  
+    
+    console.log("Étape 1 - Recherche du cropStart")
+    // Validations
+    if (!selectedSteps || selectedSteps.length === 0) {
+      throw new Error("Aucune étape sélectionnée");
+    }
 
-        const offset = this.calculateOffset(climate, configuration, area)
+    if (!configuration.gardeningDays || configuration.gardeningDays.length === 0) {
+      throw new Error("Aucun jour de jardinage configuré");
+    }
 
-        const dates = this.calculateEachDateOfCropSteps(offset, findFirstCropStartStep, selectedSteps, configuration)
+    const findFirstCropStartStep = this.findFirstCropStartStep(selectedSteps);
+    if (!findFirstCropStartStep) {
+      throw new Error("Aucune étape de début de culture trouvée");
+    }
 
-        const events = this.generateEvents(plant, area, configuration, selectedSteps, climate, dates)
+    console.log("CropStart trouvé :", findFirstCropStartStep)
+  
+    console.log("Étape 2 - Calcul de l'offset")
+    const offset = this.calculateOffset(climate, configuration, area)
+    console.log("Offset calculé :", offset)
+  
+    console.log("Étape 3 - Calcul des dates")
+    const dates = this.calculateEachDateOfCropSteps(offset, findFirstCropStartStep, selectedSteps, configuration)
+    console.log("Dates calculées :", dates)
+  
+    console.log("Étape 4 - Génération des événements")
+    const events = this.generateEvents(plant, area, configuration, selectedSteps, climate, dates);
+    
+    // Validation finale
+    if (events.some(event => !event.eventDate)) {
+      throw new Error("Certains événements n'ont pas de date valide");
+    }
 
-        return events
-    },
+    return events;
+  } catch (error) {
+    console.error("Erreur détaillée:", error);
+    throw new Error("Une erreur est survenue lors de la génération des événements: " + error.message);
+  }},
+  
     // helpers functions
     findFirstCropStartStep(steps: CultivationStep[]){
       return steps.find(step => step.isCropStart)
     },
     
-    calculateOffset(climate: string, configuration: Configuration, area: Area){
-        if(!configuration.climateOffset){
-
-          return configuration.offset
-        } else{
-          let offset = 0
-          if(area.areaType === AreaTypeEnum.Serre_de_jardin){
-            offset = 0
-          } else if (area.areaType === AreaTypeEnum.Parcelle){
-            offset = 12
-          } else if (area.areaType === AreaTypeEnum.Bac){
-            offset = 24
-          } else if (area.areaType === AreaTypeEnum.Terrasse_ou_balcon){
-            offset = 24
-          }
-
-          // climate offset
-          const climateOffset = OFFSETS.find(offset => offset.climate === climate)
-          return offset + (climateOffset?.offset || 0);
+    calculateOffset(climate: string, configuration: Configuration, area: Area) {
+      // Si l'utilisateur a défini son propre décalage
+      if (!configuration.climateOffset) {
+        return configuration.offset;
+      }
+      
+      // Sinon, calculer le décalage basé sur le climat et le type de zone
+      let offset = 0;
+      
+      // Décalage selon le type de zone
+      switch (area.areaType) {
+        case AreaTypeEnum.Serre_de_jardin:
+          offset = 0;
+          break;
+        case AreaTypeEnum.Parcelle:
+          offset = 12;
+          break;
+        case AreaTypeEnum.Bac:
+        case AreaTypeEnum.Terrasse_ou_balcon:
+          offset = 24;
+          break;
+      }
+    
+      // Ajouter le décalage climatique
+      const climateOffset = OFFSETS.find(off => off.climate === climate);
+      return offset + (climateOffset?.offset || 0);
+    },
+      
+    findNextGardeningDay(startDate: Date, gardeningDays: string[]): Date {
+      const currentDate = new Date(startDate);
+      const maxAttempts = 14; // Maximum 2 semaines de recherche
+      
+      for (let i = 0; i < maxAttempts; i++) {
+        const dayOfWeek = currentDate.getDay().toString();
+        if (gardeningDays.includes(dayOfWeek)) {
+          return new Date(currentDate);
         }
-      },
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
       
-      
-      findNextGardeningDay(startDate: Date, gardeningDays: string[]): Date | null {
-        let currentDate = startDate;
-      
-        // Limit the maximum number of iterations to avoid infinite loops
-        for (let i = 0; i < 14; i++) { // Check up to 14 days ahead
-            const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-            const dayString = ['0', '1', '2', '3', '4', '5', '6'][dayOfWeek]; // Convert to string
-      
-            if (gardeningDays.includes(dayString)) {
-                return currentDate; // Found a gardening day
-            }
-      
-            currentDate = addDays(currentDate, 1); // Move to the next day
-        }
-      
-        return null; // Return null if no gardening day is found within the limit
-      },
+      // Si aucun jour n'est trouvé, retourner la date initiale
+      return startDate;
+    },
       
       
       calculateDateOfCropStart(offset: number, step: CultivationStep){
@@ -297,50 +332,40 @@ export default factories.createCoreService('api::event.event', ({ strapi }) => (
       
       // function : calculateEachDateOfCropSteps(climate, offset, configuration (gardeningdays))
       // calculateEachDateOfCropSteps returns the dates of each crop step based on the climate, offset and configuration
-      calculateEachDateOfCropSteps(offset: number, cropStart: CultivationStep, steps: CultivationStep[], configuration: Configuration){
-        // calculate date of cropstart
-        const dates: Date[] = []
-        const cropStartIndex = steps.indexOf(cropStart)
+      calculateEachDateOfCropSteps(offset: number, cropStart: CultivationStep, steps: CultivationStep[], configuration: Configuration) {
+        const dates: Date[] = [];
+        let currentDate = new Date();
         
-        const cropStartDate = this.calculateDateOfCropStart(offset, steps[cropStartIndex]) 
-        dates.push(cropStartDate)
-        const cropStartToRemoveFromSteps = cropStartIndex
+        // Pour chaque étape
         steps.forEach((step, index) => {
-            if(index !== cropStartToRemoveFromSteps){
-              const date = new Date(cropStartDate)
-              date.setDate(date.getDate() + step.duration)
-              // check if date is in configuration.gardeningDays
-              if(configuration.gardeningDays.includes(date.toDateString())){
-                dates.push(date)
-              }else{
-              const nextGardeningDay = this.findNextGardeningDay(date, configuration.gardeningDays)
-              if(nextGardeningDay){
-                dates.push(nextGardeningDay)
-              }
-            }
+          if (step.isCropStart) {
+            // Date de début + offset pour l'étape de démarrage
+            currentDate = addDays(currentDate, offset);
+          } else {
+            // Pour les autres étapes, ajouter la durée de l'étape précédente
+            currentDate = addDays(currentDate, steps[index - 1].duration);
           }
-        })
-        
-        return dates
+      
+          // Trouver le prochain jour de jardinage disponible
+          const nextGardeningDay = this.findNextGardeningDay(currentDate, configuration.gardeningDays);
+          dates.push(nextGardeningDay || currentDate);
+        });
+      
+        return dates;
       },
       
       // function generateEvents(plant, area, configuration, selectedSteps, climate): returns an array of events
       // generateEvents returns the events based on the plant, area, configuration, selectedSteps and climate
-      generateEvents(plant: Plant, area: Area, configuration: Configuration, steps: CultivationStep[], climate: string, dates: Date[]): EventGenerated[]{
-        const events: EventGenerated[] = []
-        steps.forEach((step, index) => {
-          events.push({
-            title: `${step.name} de ${plant.name}`,
-            description: `${step.description}`,
-            eventDate: dates[index],
-            type: index === 0 ? TypeEnum.DEBUT_DE_CULTURE : TypeEnum.CULTURE,
-            eventType: EventTypeEnum.DYNAMIQUE,
-            importance: getImportanceLevel(step.importance),
-            completed: false,
-            completedAt: null,
-          })
-        })
-
-        return events
-      },
+      generateEvents(plant: Plant, area: Area, configuration: Configuration, steps: CultivationStep[], climate: string, dates: Date[]): EventGenerated[] {
+        return steps.map((step, index) => ({
+          title: `${step.name} de ${plant.name}`,
+          description: step.description,
+          eventDate: dates[index], // Utiliser la date correspondante à l'index
+          type: step.stepType || (step.isCropStart ? TypeEnum.DEBUT_DE_CULTURE : TypeEnum.CULTURE), // Valeur par défaut
+          eventType: EventTypeEnum.DYNAMIQUE,
+          importance: getImportanceLevel(step.importance),
+          completed: false,
+          completedAt: null
+        }));
+      }
 }))

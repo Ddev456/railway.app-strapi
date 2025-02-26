@@ -47,6 +47,18 @@
     "isCropStart": {
       "type": "boolean",
       "required": true
+    },
+    "order": {
+      "type": "integer",
+      "required": true
+    },
+    "dependsOn": {
+      "type": "json",
+      "required": false
+    },
+    "triggers": {
+      "type": "json",
+      "required": false
     }
   }
 }

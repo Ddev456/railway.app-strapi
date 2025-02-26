@@ -205,6 +205,8 @@ interface GenerateEventsRequestBody {
 }
 
 export default factories.createCoreController('api::event.event', ({ strapi }) => ({
+  
+  /*
   async generateForPlant(ctx: Context): Promise<void> {
     const { data } = ctx.request.body;
 
@@ -219,9 +221,9 @@ export default factories.createCoreController('api::event.event', ({ strapi }) =
 
     const eventsData = await strapi.service('api::event.event-generate').generate({plant, area, configuration, selectedSteps, climate} as GenerateEventsRequestBody);
 
-    if (!eventsData) {
+    if (!eventsData.ok) {
       throw new Error(ERROR_MESSAGES.GENERATION_ERROR);
-    }
+    }else{
     try {
     const events = await Promise.all(
       eventsData.map(event => 
@@ -251,4 +253,67 @@ export default factories.createCoreController('api::event.event', ({ strapi }) =
       };
     }
   }
+}
+})); */
+
+
+
+// Dans api/event/controllers/event.js
+async generateForPlant(ctx) {
+  try {
+    const { data } = ctx.request.body;
+    const { plant, area, configuration, selectedSteps, climate } = data;
+
+    // Validation des données d'entrée
+    if (!plant || !area || !configuration || !selectedSteps || !climate) {
+      return ctx.badRequest('Données manquantes pour la génération des événements');
+    }
+
+    // Appel du service avec logging
+    console.log("Appel du service de génération avec les données :", {
+      plant: plant.name,
+      area: area.name,
+      configurationName: configuration.name,
+      stepsCount: selectedSteps.length
+    });
+
+    const events = await strapi.service('api::event.event-generate').generate({
+      plant,
+      area,
+      configuration,
+      selectedSteps,
+      climate
+    });
+
+    // Validation des événements générés
+    if (!Array.isArray(events)) {
+      throw new Error("Le service n'a pas retourné un tableau d'événements");
+    }
+
+// Préparation des données d'événements
+const eventsData = await Promise.all(
+  events.map(event => 
+    strapi.documents("api::event.event").create({
+      data: {
+        ...event,
+        plant: plant.documentId,
+        area: area.documentId,
+        configuration: configuration.documentId,
+        user: ctx.state.user?.documentId
+      },
+      populate: ["plant", "area", "configuration", "user"],
+      status: 'published',
+    })
+  )
+);
+
+    return ctx.send({
+      events: eventsData
+    });
+
+  } catch (error) {
+    console.error("Erreur détaillée:", error);
+    return ctx.badRequest(`Erreur lors de la génération des événements: ${error.message}`);
+  }
+}
 }));
