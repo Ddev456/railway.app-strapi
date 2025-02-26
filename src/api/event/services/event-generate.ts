@@ -231,7 +231,7 @@ function getImportanceLevel(importance: ImportanceStepEnum) {
 
 export default factories.createCoreService('api::event.event', ({ strapi }) => ({    
     async generate({plant, area, configuration, selectedSteps, climate}: {plant: Plant, area: Area, configuration: Configuration, selectedSteps: CultivationStep[], climate: string}){
-        
+      console.log("service generate called with : ", plant, area, configuration, selectedSteps, climate)
       const findFirstCropStartStep = this.findFirstCropStartStep(selectedSteps)
 
         const offset = this.calculateOffset(climate, configuration, area)
@@ -334,7 +334,7 @@ export default factories.createCoreService('api::event.event', ({ strapi }) => (
             description: `${step.description}`,
             eventDate: dates[index],
             type: index === 0 ? TypeEnum.DEBUT_DE_CULTURE : TypeEnum.CULTURE,
-            eventType: EventTypeEnum.PERSONNALISE,
+            eventType: EventTypeEnum.DYNAMIQUE,
             importance: getImportanceLevel(step.importance),
             completed: false,
             completedAt: null,

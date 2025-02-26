@@ -206,13 +206,18 @@ interface GenerateEventsRequestBody {
 
 export default factories.createCoreController('api::event.event', ({ strapi }) => ({
   async generateForPlant(ctx: Context): Promise<void> {
-    const { plant, area, configuration, selectedSteps, climate } = ctx.request.body as GenerateEventsRequestBody;
+    const { data } = ctx.request.body;
 
-    if (!plant || !area || !configuration || !selectedSteps || !climate) {
-      throw new Error(ERROR_MESSAGES.MISSING_PARAMS);
-    }
+    // Ensuite destructurer le contenu de data
+    const {
+      plant,
+      area,
+      configuration,
+      selectedSteps,
+      climate
+    } = data;
 
-    const eventsData = await strapi.service('api::event.event-generate').generate({plant, area, configuration, selectedSteps, climate});
+    const eventsData = await strapi.service('api::event.event-generate').generate({plant, area, configuration, selectedSteps, climate} as GenerateEventsRequestBody);
 
     if (!eventsData) {
       throw new Error(ERROR_MESSAGES.GENERATION_ERROR);
